@@ -1,0 +1,40 @@
+# Archivos y carpetas de Node
+node_modules/
+npm-debug.log*
+.DS_Store # Para usuarios de macOS
+
+# Archivos de logs y bases de datos locales
+*.log
+*.sqlite
+*.db
+
+# Archivos de configuración y variables de entorno sensibles
+.env
+.env.local
+
+# Archivos temporales generados por el sistema operativo
+.DS_Store
+Thumbs.db
+ehthumbs.db
+.idea/ # Directorio de configuración de IDEs como IntelliJ/WebStorm
+*.sublime-project
+*.sublime-workspace
+
+# Archivos de Jest (si genera reportes o caches)
+coverage/
+
+# Archivos de Cypress (caché, videos, capturas de pantalla, etc.)
+cypress/videos/
+cypress/screenshots/
+cypress/results/
+cypress/report/
+cypress/integration/**/*.json # Si generas reportados JSON en tests/frontend
+
+# Archivos de mensajes (si solo es para desarrollo local)
+mensajes.json # ¡IMPORTANTE! Si quieres que los mensajes no se suban a GitHub
+
+# Archivos de backup o temporales de editores
+*~
+*.bak
+*.swp
+.fuse_hidden*

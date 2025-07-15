@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Fuerte Secreto de Mensajes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css">
+    <meta property="og:title" content="Mi Fuerte Secreto de Mensajes">
+    <meta property="og:description" content="Envía y recibe mensajes secretos en mi fuerte.">
+    <meta property="og:image" content="https://example.com/imagen-de-tu-fuerte.jpg"> <meta property="og:url" content="https://example.com/mi-fuerte"> <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mi Fuerte Secreto de Mensajes">
+    <meta name="twitter:description" content="Envía y recibe mensajes secretos en mi fuerte.">
+    <meta name="twitter:image" content="https://example.com/imagen-de-tu-fuerte.jpg"> 
+
+    <style>
+        /* Esto es para que tu pantalla se vea bonita (CSS) */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0 auto;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+        }
+        h1,h2 {
+            color: #000;
+            text-align: center;
+        }
+        p{
+            color: #000;
+        }
+        label{
+            color: #000;
+        }
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical; /* Permite cambiar el tamaño verticalmente */
+            min-height: 80px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .mensajes-lista {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+        .mensaje {
+            background-color: #e9e9e9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .mensaje strong {
+            color: #555;
+        }
+        .mensaje p {
+            margin: 5px 0 0 0;
+        }
+        .error {
+            color: red;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        header, main, footer {
+                    padding: 1.5rem; /* Espaciado interno de Pico */
+                }     
+    </style>
+</head>
+<body>
+  <main class="container"> 
+    <header>
+              <h1>🛡️ Fuerte Secreto de Mensajes</h1>
+              <p class="error" id="error-message"></p>
+              <p>Envía y recibe mensajes secretos de forma segura.</p>
+          </header>
+
+          <section>
+              <h2>📝 Enviar Nuevo Mensaje</h2>
+             
+                  <label for="mensajeInput">Tu Mensaje Secreto:</label>
+                  <textarea id="mensajeInput" placeholder="Escribe tu mensaje aquí..." rows="4" required></textarea>
+                  <button onclick="enviarMensaje()">Enviar Mensaje Secreto</button>
+              
+          </section>
+
+          <section>
+            
+              <div id="mensajesLista" class="mensajes-lista">
+                  <p>Cargando mensajes...</p>
+              </div>
+          </section>
+      </main>
+
+    <script>
+        // Esto es lo que hace que los botones funcionen (JavaScript)
+        const API_URL = 'http://localhost:3000'; // La puerta secreta de nuestro robot
+
+        async function cargarMensajes() {
+            const mensajesLista = document.getElementById('mensajesLista');
+            mensajesLista.innerHTML = '<h2>Mensajes Recibidos:</h2>'; // Limpia para recargar
+            document.getElementById('error-message').textContent = ''; // Limpia errores
+
+            try {
+                // Le pedimos al robot que nos dé los mensajes
+                const response = await fetch(`${API_URL}/mensajes`);
+                const mensajes = await response.json();
+
+                if (mensajes.length === 0) {
+                    mensajesLista.innerHTML += '<p>No hay mensajes secretos todavía. ¡Sé el primero!</p>';
+                } else {
+                    mensajes.forEach(msg => {
+                        const div = document.createElement('div');
+                        div.className = 'mensaje';
+                        div.innerHTML = `<strong>${msg.fecha}:</strong> <p>${msg.texto}</p>`;
+                        mensajesLista.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error('Error al cargar mensajes:', error);
+                document.getElementById('error-message').textContent = '¡Oh no! No pude hablar con el robot para cargar los mensajes.';
+            }
+        }
+
+        async function enviarMensaje() {
+            const mensajeInput = document.getElementById('mensajeInput');
+            const texto = mensajeInput.value.trim();
+            document.getElementById('error-message').textContent = ''; // Limpia errores
+
+            if (texto === '') {
+                alert('¡No puedes enviar un mensaje vacío!');
+                return;
+            }
+
+            const nuevoMensaje = {
+                texto: texto,
+                fecha: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString()
+            };
+
+            try {
+                // Le damos el nuevo mensaje al robot para que lo guarde
+                const response = await fetch(`${API_URL}/mensajes`, {
+                    method: 'POST', // Le decimos que vamos a POSTear un mensaje
+                    headers: {
+                        'Content-Type': 'application/json' // Le decimos que el mensaje es JSON
+                    },
+                    body: JSON.stringify(nuevoMensaje) // Le damos el mensaje en formato JSON
+                });
+
+                if (response.ok) {
+                    mensajeInput.value = ''; // Limpiamos el lugar donde escribimos
+                    await cargarMensajes(); // Volvemos a cargar para ver el nuevo mensaje
+                } else {
+                    throw new Error('Error al guardar el mensaje.');
+                }
+            } catch (error) {
+                console.error('Error al enviar mensaje:', error);
+                document.getElementById('error-message').textContent = '¡Ups! El robot no pudo guardar tu mensaje.';
+            }
+        }
+
+        // Cuando la página se abre, cargamos los mensajes
+        window.onload = cargarMensajes;
+    </script>
+</body>
+</html>
