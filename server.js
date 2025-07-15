@@ -1,6 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 const app = express(); // Creamos a nuestro robot Express
 const PORT = 3000; // Esta es la puerta secreta de nuestro fuerte (dirección)
 
@@ -25,6 +26,14 @@ app.get('/', (req, res) => {
 // --- FIN DEL CÓDIGO NUEVO --
 
 const mensajesFilePath = path.join(__dirname, 'mensajes.json');
+
+const mensajesRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // limit each IP to 100 requests per windowMs
+    message: { error: 'Too many requests, please try again later.' }
+});
+
+app.use('/mensajes', mensajesRateLimiter);
 
 app.get('/mensajes', (req, res) => {
     fs.readFile(mensajesFilePath, 'utf8', (err, data) => {
