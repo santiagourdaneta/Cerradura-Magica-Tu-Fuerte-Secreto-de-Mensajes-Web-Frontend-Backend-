@@ -20,7 +20,13 @@ app.use((req, res, next) => {
 app.use(express.static(path.join(__dirname)));
 
 // Cuando alguien visite la dirección principal (ej: http://localhost:3000/), el robot enviará index.html
-app.get('/', (req, res) => {
+const indexRateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 50, // limit each IP to 50 requests per windowMs
+    message: { error: 'Too many requests to the homepage, please try again later.' }
+});
+
+app.get('/', indexRateLimiter, (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 // --- FIN DEL CÓDIGO NUEVO --
